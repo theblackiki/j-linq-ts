@@ -1,8 +1,4 @@
-import { Func, Action, Predicate } from "./funtion-types";
-
-export interface IComparable<T> {
-  compareTo(t1: T, t2: T): number;
-}
+import { Func, Action, Predicate, IComparable } from "./funtion-types";
 
 export interface IEnumerable<T> {
   //IEnumerable to IEnumerable
@@ -41,3 +37,5 @@ export interface IOrderEnumerable<T> extends IEnumerable<T> {
   ): IOrderEnumerable<T>;
 }
 export interface IGroupEnumerable<T> {}
+export { IComparable };
+

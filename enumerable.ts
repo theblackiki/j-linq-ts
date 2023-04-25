@@ -1,4 +1,4 @@
-import { Action, Func, Predicate } from "./funtion-types";
+import { Action, Func, Predicate, TComparable } from "./funtion-types";
 import { IComparable, IEnumerable, IOrderEnumerable } from "./interface";
 import { isIterable } from "./funtion-types";
 
@@ -71,9 +71,7 @@ export class Enumerable<T> implements IEnumerable<T>, Iterable<T> {
    * @param func
    * @returns
    */
-  orderBy<Tkey extends number | string | IComparable<Tkey>>(
-    func: Func<T, Tkey>
-  ): IOrderEnumerable<T> {
+  orderBy<Tkey extends number | string | IComparable<Tkey>>(func: Func<T, Tkey> ): IOrderEnumerable<T> {
     //TODO:按照类型排序,orderBy和thenBy的优先级关系应该如何确定
 
     return new OrderEnumerable<T, Tkey>(this.generator, func);
@@ -239,19 +237,38 @@ export class Enumerable<T> implements IEnumerable<T>, Iterable<T> {
       }
     }
   }
+
+  /**
+   * 内部排序逻辑
+   * @param arr 
+   */
+  private *internalSort(arr:Iterator<TComparable<T>>):Iterator<TComparable<T>>{
+    const res :TComparable<T>[]= new Array<TComparable<T>>();
+    if(arr as Iterator<string>){
+
+    }
+    else if(arr as Iterator<number>){
+
+    }
+    else{ // arr as Iterator<IComparable<T>>
+
+    }
+    for(const current of res){
+      yield current;
+    }
+  }
+
 }
 
 /**
  * 这个是内部实现排序功能的可迭代类，不对外暴露
  */
-class OrderEnumerable<T, Tkey>
-  extends Enumerable<T>
-  implements IOrderEnumerable<T>
+class OrderEnumerable<T, Tkey> extends Enumerable<T> implements IOrderEnumerable<T>
 {
-  constructor(iterator: Iterable<T>, func: Func<T, Tkey>) {
+  constructor(iterator: Iterable<T>,public func: Func<T, Tkey>) {
     super(iterator);
   }
-  thenBy(): IOrderEnumerable<T> {
-    throw new Error("Method not implemented.");
+  thenBy<Tkey1>(func1:Func<T,Tkey1>): IOrderEnumerable<T> {
+    return new OrderEnumerable<T,Tkey1>(this.generator,func1);
   }
 }
